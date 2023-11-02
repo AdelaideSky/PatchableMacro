@@ -41,10 +41,12 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
         let variables = classDecl.memberBlock.members.compactMap { $0.decl.as(VariableDeclSyntax.self) }
         
         let labels = variables.compactMap { variable in
-            let varLabel = variable.bindings.first?.as(PatternBindingSyntax.self)?.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
+            let binding = variable.bindings.first?.as(PatternBindingSyntax.self)
+            let varLabel = binding?.pattern.as(IdentifierPatternSyntax.self)?.identifier.text
+            let optional = binding?.typeAnnotation?.type.is(OptionalTypeSyntax.self)
             let decorator = variable.attributes.first?.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text
             if let varLabel = varLabel {
-                return (varLabel, codingKeys[varLabel] ?? varLabel, decorator ?? "")
+                return (varLabel, codingKeys[varLabel] ?? varLabel, decorator ?? "", optional ?? false)
             }
             return nil
         }
@@ -78,12 +80,22 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
             if !elligibleValues.isEmpty {
                 try SwitchExprSyntax("switch child") {
                         for element in elligibleValues {
-                            SwitchCaseSyntax(
-                                """
-                                case "\(raw: element.1)":
-                                    try self.\(raw: element.0).patch(path, with: value)
-                                """
-                            )
+                            if element.3 {
+                                SwitchCaseSyntax(
+                                    """
+                                    case "\(raw: element.1)":
+                                        guard self.\(raw: element.0) != nil else { return }
+                                        try self.\(raw: element.0)!.patch(path, with: value)
+                                    """
+                                )
+                            } else {
+                                SwitchCaseSyntax(
+                                    """
+                                    case "\(raw: element.1)":
+                                        try self.\(raw: element.0).patch(path, with: value)
+                                    """
+                                )
+                            }
                         }
                         SwitchCaseSyntax("default: throw PatchError.noValueForKey")
                     }

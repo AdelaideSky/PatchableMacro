@@ -38,7 +38,7 @@ class TestClass: ObservableObject {
         print("e")
     }}
     @child 
-    @Published var test: OtherClass = .init()
+    @Published var test: OtherClass? = .init()
 
     enum CodingKeys: String, CodingKey {
         case value = "TheValue"
