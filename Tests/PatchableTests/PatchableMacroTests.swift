@@ -17,7 +17,7 @@ final class PatchableMacroTests: XCTestCase {
 class OtherClass: ObservableObject {
     var value: Bool = false
     enum CodingKeys: String, CodingKey {
-        case value
+        case value = "TheValue"
     }
     
     func encode(to encoder: Encoder) throws {
@@ -40,7 +40,8 @@ class TestClass: ObservableObject {
     @patchableChild var test: OtherClass = .init()
 
     enum CodingKeys: String, CodingKey {
-        case value
+        case value = "TheValue"
+        case test
     }
     
     func encode(to encoder: Encoder) throws {

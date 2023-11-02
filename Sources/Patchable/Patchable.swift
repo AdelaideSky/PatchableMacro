@@ -13,10 +13,8 @@ public macro Patchable() = #externalMacro(module: "PatchableMacros", type: "Patc
 }
 
 public protocol PatchableProtocol: Codable {
-    associatedtype CodingKeys: CodingKey, RawRepresentable where CodingKeys.RawValue: StringProtocol
-    
-    func patch(_ key: CodingKeys, with value: Data) throws
-    func patch(child: CodingKeys, path: [String], with value: Data) throws
+    func patch(_ key: String, with value: Data) throws
+    func patch(child: String, path: [String], with value: Data) throws
 }
 
 public extension PatchableProtocol {
@@ -24,13 +22,18 @@ public extension PatchableProtocol {
         guard !path.isEmpty else { return }
         
         if path.count == 1 {
-            if let key = CodingKeys(stringValue: path.first ?? "") {
+            if let key = path.first {
                 try self.patch(key, with: value)
             }
         } else {
-            if let key = CodingKeys(stringValue: path.first!) {
+            if let key = path.first {
                 try self.patch(child: key, path: Array(path.dropFirst()), with: value)
             }
         }
     }
+}
+
+public enum PatchError: Error {
+    case noValueForKey
+    
 }
