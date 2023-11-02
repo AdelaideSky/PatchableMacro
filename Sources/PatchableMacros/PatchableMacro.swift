@@ -4,13 +4,11 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 import SwiftUI
 
-public struct PatchableMacro: ExtensionMacro {
-    
+public struct PatchableMacro: ExtensionMacro, MemberMacro {
     public static func expansion(of node: SwiftSyntax.AttributeSyntax,
-                                 attachedTo declaration: some SwiftSyntax.DeclGroupSyntax, providingExtensionsOf type: some SwiftSyntax.TypeSyntaxProtocol,
-                                 conformingTo protocols: [SwiftSyntax.TypeSyntax],
+                                 providingMembersOf declaration: some SwiftSyntax.DeclGroupSyntax,
                                  in context: some SwiftSyntaxMacros.MacroExpansionContext
-    ) throws -> [SwiftSyntax.ExtensionDeclSyntax] {
+    ) throws -> [SwiftSyntax.DeclSyntax] {
         guard let classDecl = declaration.as(ClassDeclSyntax.self) else { return [] }
         let enums = classDecl.memberBlock.members.compactMap { $0.decl.as(EnumDeclSyntax.self) }
         
@@ -19,16 +17,29 @@ public struct PatchableMacro: ExtensionMacro {
             return []
         }
         let codingKeys = codingKeysEnum.memberBlock.members.compactMap { $0.decl.as(EnumCaseDeclSyntax.self)?.elements.first?.name.text }
+        let variables = classDecl.memberBlock.members.compactMap({ $0.decl.as(VariableDeclSyntax.self)})
         
         var patch = try FunctionDeclSyntax("func patch(_ key: CodingKeys, with value: Data) throws") {
             try SwitchExprSyntax("switch key") {
                     for element in codingKeys {
-                        SwitchCaseSyntax(
-                            """
-                            case .\(raw: element):
-                                self.\(raw: element) = try JSONDecoder().decode(type(of: self.\(raw: element)), from: value)
-                            """
-                        )
+                        if let variable = variables.first(where: {$0.bindings.first?.pattern.as(IdentifierPatternSyntax.self)?.identifier.text == element}) {
+                            if variable.attributes.first?.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text == "GoXLRValue" {
+                                SwitchCaseSyntax(
+                                    """
+                                    case .\(raw: element):
+                                        self._\(raw: element).freeValue = try JSONDecoder().decode(type(of: self.\(raw: element)), from: value)
+                                    """
+                                )
+                            } else {
+                                SwitchCaseSyntax(
+                                    """
+                                    case .\(raw: element):
+                                        self.\(raw: element) = try JSONDecoder().decode(type(of: self.\(raw: element)), from: value)
+                                    """
+                                )
+                            }
+                        }
+                        
                     }
                 }
         }
@@ -57,11 +68,24 @@ public struct PatchableMacro: ExtensionMacro {
                     }
             }
         }
+        return [.init(patch), .init(childPatch)]
+    }
+    
+    
+    public static func expansion(of node: SwiftSyntax.AttributeSyntax,
+                                 attachedTo declaration: some SwiftSyntax.DeclGroupSyntax, providingExtensionsOf type: some SwiftSyntax.TypeSyntaxProtocol,
+                                 conformingTo protocols: [SwiftSyntax.TypeSyntax],
+                                 in context: some SwiftSyntaxMacros.MacroExpansionContext
+    ) throws -> [SwiftSyntax.ExtensionDeclSyntax] {
+        guard let classDecl = declaration.as(ClassDeclSyntax.self) else { return [] }
+        let enums = classDecl.memberBlock.members.compactMap { $0.decl.as(EnumDeclSyntax.self) }
         
-        let sendableExtension = try ExtensionDeclSyntax("extension \(type.trimmed): PatchableProtocol") {
-            patch
-            childPatch
+        guard let codingKeysEnum = enums.first(where: {$0.name.text == "CodingKeys"}) else {
+            print("No codingKeys !")
+            return []
         }
+        
+        let sendableExtension = try ExtensionDeclSyntax("extension \(type.trimmed): PatchableProtocol") { }
         
         guard let extensionDecl = sendableExtension.as(ExtensionDeclSyntax.self) else {
             return []
@@ -69,8 +93,6 @@ public struct PatchableMacro: ExtensionMacro {
 
         return [extensionDecl]
     }
-    
-    
 }
 
 @main

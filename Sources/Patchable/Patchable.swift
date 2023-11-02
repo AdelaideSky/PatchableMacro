@@ -1,16 +1,8 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
-
-/// A macro that produces both a value and a string containing the
-/// source code that generated the value. For example,
-///
-///     #stringify(x + y)
-///
-/// produces a tuple `(x + y, "x + y")`.
 import SwiftUI
 
-@attached(extension, conformances: PatchableProtocol, names: named(patch))
-public macro Patchable() = #externalMacro(module: "PatchableMacroMacros", type: "PatchableMacro")
+@attached(extension, conformances: PatchableProtocol)
+@attached(member, names: named(patch))
+public macro Patchable() = #externalMacro(module: "PatchableMacros", type: "PatchableMacro")
 
 @propertyWrapper public struct PatchableChild<Value: PatchableProtocol> {
     public var wrappedValue: Value

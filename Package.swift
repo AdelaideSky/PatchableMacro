@@ -10,12 +10,8 @@ let package = Package(
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "PatchableMacro",
-            targets: ["PatchableMacro"]
-        ),
-        .executable(
-            name: "PatchableMacroClient",
-            targets: ["PatchableMacroClient"]
+            name: "Patchable",
+            targets: ["Patchable"]
         ),
     ],
     dependencies: [
@@ -27,7 +23,7 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         // Macro implementation that performs the source transformation of a macro.
         .macro(
-            name: "PatchableMacroMacros",
+            name: "PatchableMacros",
             dependencies: [
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax")
@@ -35,16 +31,13 @@ let package = Package(
         ),
 
         // Library that exposes a macro as part of its API, which is used in client programs.
-        .target(name: "PatchableMacro", dependencies: ["PatchableMacroMacros"]),
-
-        // A client of the library, which is able to use the macro in its own code.
-        .executableTarget(name: "PatchableMacroClient", dependencies: ["PatchableMacro"]),
+        .target(name: "Patchable", dependencies: ["PatchableMacros"]),
 
         // A test target used to develop the macro implementation.
         .testTarget(
-            name: "PatchableMacroTests",
+            name: "PatchableTests",
             dependencies: [
-                "PatchableMacroMacros",
+                "PatchableMacros",
                 .product(name: "SwiftSyntaxMacrosTestSupport", package: "swift-syntax"),
             ]
         ),
