@@ -72,7 +72,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
                 SwitchCaseSyntax("default: throw PatchError.noValueForKey")
             }
         }
-        let elligibleValues = labels.filter({$0.2 == "PatchableChild"})
+        let elligibleValues = labels.filter({$0.2 == "child"})
         
         var childPatch = try FunctionDeclSyntax("public func patch(child: String, path: [String], with value: Data) throws") {
             if !elligibleValues.isEmpty {
@@ -114,5 +114,6 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
 struct PatchableMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         PatchableMacro.self,
+        ChildMacro.self,
     ]
 }

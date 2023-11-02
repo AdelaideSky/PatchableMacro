@@ -4,16 +4,8 @@ import SwiftUI
 @attached(member, names: named(patch))
 public macro Patchable() = #externalMacro(module: "PatchableMacros", type: "PatchableMacro")
 
-@propertyWrapper public struct PatchableChild<Value: PatchableProtocol> {
-    public var wrappedValue: Value?
-
-    public init(wrappedValue: Value?) {
-        self.wrappedValue = wrappedValue
-    }
-    public init(wrappedValue: Value) {
-        self.wrappedValue = wrappedValue
-    }
-}
+@attached(peer)
+public macro child() = #externalMacro(module: "PatchableMacros", type: "ChildMacro")
 
 public protocol PatchableProtocol: Codable {
     func patch(_ key: String, with value: Data) throws

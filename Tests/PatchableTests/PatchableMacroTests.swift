@@ -37,7 +37,8 @@ class TestClass: ObservableObject {
     @Published var value: Bool = false { didSet {
         print("e")
     }}
-    @patchableChild var test: OtherClass = .init()
+    @child 
+    @Published var test: OtherClass = .init()
 
     enum CodingKeys: String, CodingKey {
         case value = "TheValue"
