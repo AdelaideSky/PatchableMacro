@@ -69,7 +69,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
                     }
                     
                 }
-                SwitchCaseSyntax("default: throw Patchable.PatchError.noValueForKey")
+                SwitchCaseSyntax("default: throw PatchError.noValueForKey")
             }
         }
         let elligibleValues = labels.filter({$0.2 == "PatchableChild"})
@@ -85,7 +85,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
                                 """
                             )
                         }
-                        SwitchCaseSyntax("default: throw Patchable.PatchError.noValueForKey")
+                        SwitchCaseSyntax("default: throw PatchError.noValueForKey")
                     }
             }
         }
@@ -100,7 +100,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
                                  in context: some SwiftSyntaxMacros.MacroExpansionContext
     ) throws -> [SwiftSyntax.ExtensionDeclSyntax] {
         
-        let sendableExtension = try ExtensionDeclSyntax("public extension \(type.trimmed): PatchableProtocol") { }
+        let sendableExtension = try ExtensionDeclSyntax("extension \(type.trimmed): PatchableProtocol") { }
         
         guard let extensionDecl = sendableExtension.as(ExtensionDeclSyntax.self) else {
             return []
