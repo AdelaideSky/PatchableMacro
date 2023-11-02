@@ -10,6 +10,9 @@ public macro Patchable() = #externalMacro(module: "PatchableMacros", type: "Patc
     public init(wrappedValue: Value?) {
         self.wrappedValue = wrappedValue
     }
+    public init(wrappedValue: Value) {
+        self.wrappedValue = wrappedValue
+    }
 }
 
 public protocol PatchableProtocol: Codable {
