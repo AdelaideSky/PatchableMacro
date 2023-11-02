@@ -49,7 +49,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
             return nil
         }
         
-        var patch = try FunctionDeclSyntax("func patch(_ key: String, with value: Data) throws") {
+        var patch = try FunctionDeclSyntax("public func patch(_ key: String, with value: Data) throws") {
             try SwitchExprSyntax("switch key") {
                 for label in labels {
                     if label.2 == "GoXLRValue" {
@@ -74,7 +74,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
         }
         let elligibleValues = labels.filter({$0.2 == "PatchableChild"})
         
-        var childPatch = try FunctionDeclSyntax("func patch(child: String, path: [String], with value: Data) throws") {
+        var childPatch = try FunctionDeclSyntax("public func patch(child: String, path: [String], with value: Data) throws") {
             if !elligibleValues.isEmpty {
                 try SwitchExprSyntax("switch child") {
                         for element in elligibleValues {
@@ -100,7 +100,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
                                  in context: some SwiftSyntaxMacros.MacroExpansionContext
     ) throws -> [SwiftSyntax.ExtensionDeclSyntax] {
         
-        let sendableExtension = try ExtensionDeclSyntax("extension \(type.trimmed): PatchableProtocol") { }
+        let sendableExtension = try ExtensionDeclSyntax("public extension \(type.trimmed): PatchableProtocol") { }
         
         guard let extensionDecl = sendableExtension.as(ExtensionDeclSyntax.self) else {
             return []
