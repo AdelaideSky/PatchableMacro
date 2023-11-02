@@ -5,9 +5,9 @@ import SwiftUI
 public macro Patchable() = #externalMacro(module: "PatchableMacros", type: "PatchableMacro")
 
 @propertyWrapper public struct PatchableChild<Value: PatchableProtocol> {
-    public var wrappedValue: Value
+    public var wrappedValue: Value?
 
-    public init(wrappedValue: Value) {
+    public init(wrappedValue: Value?) {
         self.wrappedValue = wrappedValue
     }
 }
