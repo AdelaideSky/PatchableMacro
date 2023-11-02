@@ -5,7 +5,7 @@ import SwiftUI
 public macro Patchable() = #externalMacro(module: "PatchableMacros", type: "PatchableMacro")
 
 @attached(peer)
-public macro child() = #externalMacro(module: "PatchableMacros", type: "ChildMacro")
+public macro Child() = #externalMacro(module: "PatchableMacros", type: "ChildMacro")
 
 public protocol PatchableProtocol: Codable {
     func patch(_ key: String, with value: Data) throws
