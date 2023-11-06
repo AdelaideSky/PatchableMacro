@@ -54,21 +54,13 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
         var patch = try FunctionDeclSyntax("public func patch(_ key: String, with value: Data) throws") {
             try SwitchExprSyntax("switch key") {
                 for label in labels {
-                    if label.2 == "GoXLRValue" {
-                        SwitchCaseSyntax(
-                                """
-                                case "\(raw: label.1)":
-                                    self._\(raw: label.0).freeValue = try JSONDecoder().decode(type(of: self.\(raw: label.0)), from: value)
-                                """
-                        )
-                    } else {
-                        SwitchCaseSyntax(
-                                """
-                                case "\(raw: label.1)":
-                                    self.\(raw: label.0) = try JSONDecoder().decode(type(of: self.\(raw: label.0)), from: value)
-                                """
-                        )
-                    }
+                    guard label.2 != "IgnorePatches" else { continue }
+                    SwitchCaseSyntax(
+                            """
+                            case "\(raw: label.1)":
+                                self.\(raw: label.0) = try JSONDecoder().decode(type(of: self.\(raw: label.0)), from: value)
+                            """
+                    )
                     
                 }
                 SwitchCaseSyntax("default: throw PatchError.noValueForKey")

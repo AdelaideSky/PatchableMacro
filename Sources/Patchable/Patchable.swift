@@ -7,6 +7,9 @@ public macro Patchable() = #externalMacro(module: "PatchableMacros", type: "Patc
 @attached(peer)
 public macro child() = #externalMacro(module: "PatchableMacros", type: "ChildMacro")
 
+@attached(peer)
+public macro IgnorePatches() = #externalMacro(module: "PatchableMacros", type: "IgnoreMacro")
+
 public protocol PatchableProtocol: Codable {
     func patch(_ key: String, with value: Data) throws
     func patch(child: String, path: [String], with value: Data) throws
