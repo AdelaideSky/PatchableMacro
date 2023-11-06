@@ -120,5 +120,6 @@ struct PatchableMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
         PatchableMacro.self,
         ChildMacro.self,
+        IgnoreMacro.self,
     ]
 }
