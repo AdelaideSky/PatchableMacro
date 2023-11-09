@@ -32,6 +32,14 @@ public extension PatchableProtocol {
 }
 
 public enum PatchError: Error {
-    case noValueForKey
+    case noValueForKey(path: [String])
     
+}
+extension PatchError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .noValueForKey(let path):
+            return "No value for key: \(path.first ?? "Unknown"), remaining path: \(String(describing: path.dropFirst))"
+        }
+    }
 }

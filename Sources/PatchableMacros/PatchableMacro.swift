@@ -64,7 +64,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
                     }
                     
                 }
-                SwitchCaseSyntax("default: throw PatchError.noValueForKey")
+                SwitchCaseSyntax("default: throw PatchError.noValueForKey([key])")
             }
         }
         let elligibleValues = labels.filter({$0.2 == "child"})
@@ -90,7 +90,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
                                 )
                             }
                         }
-                        SwitchCaseSyntax("default: throw PatchError.noValueForKey")
+                        SwitchCaseSyntax("default: throw PatchError.noValueForKey([child]+path)")
                     }
             }
         }
