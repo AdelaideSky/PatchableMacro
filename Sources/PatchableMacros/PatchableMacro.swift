@@ -46,7 +46,7 @@ public struct PatchableMacro: ExtensionMacro, MemberMacro {
             let optional = binding?.typeAnnotation?.type.is(OptionalTypeSyntax.self)
             let decorator = variable.attributes.first?.as(AttributeSyntax.self)?.attributeName.as(IdentifierTypeSyntax.self)?.name.text
             if let varLabel = varLabel {
-                return (varLabel, codingKeys[varLabel] ?? varLabel, decorator ?? "", optional ?? false)
+                return (varLabel, codingKeys[varLabel] ?? "COULDNT FIND CODINGKEY FOR VALUE", decorator ?? "", optional ?? false)
             }
             return nil
         }
