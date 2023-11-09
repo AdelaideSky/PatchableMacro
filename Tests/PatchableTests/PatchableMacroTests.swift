@@ -40,9 +40,27 @@ class TestClass: ObservableObject {
     @child 
     @Published var test: OtherClass? = .init()
 
-    enum CodingKeys: String, CodingKey {
+    @Published var effectFX: String = ""
+
+    private enum CodingKeys: String, CodingKey {
         case value = "TheValue"
         case test
+        case bleep = "Bleep"
+        case cough = "Cough"
+        case effectFX = "EffectFx"
+        case effectHardTune = "EffectHardTune"
+        case effectMegaphone = "EffectMegaphone"
+        case effectRobot = "EffectRobot"
+        case effectSelect1 = "EffectSelect1"
+        case effectSelect2 = "EffectSelect2"
+        case effectSelect3 = "EffectSelect3"
+        case effectSelect4 = "EffectSelect4"
+        case effectSelect5 = "EffectSelect5"
+        case effectSelect6 = "EffectSelect6"
+        case fader1Mute = "Fader1Mute"
+        case fader2Mute = "Fader2Mute"
+        case fader3Mute = "Fader3Mute"
+        case fader4Mute = "Fader4Mute"
     }
     
     func encode(to encoder: Encoder) throws {
