@@ -32,7 +32,7 @@ public extension PatchableProtocol {
 }
 
 public enum PatchError: Error {
-    case noValueForKey(path: [String])
+    case noValueForKey([String])
     
 }
 extension PatchError: LocalizedError {
